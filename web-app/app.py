@@ -31,7 +31,8 @@ import json
 def load_data():
     """Load the test files with model predictions, subsampling a fraction of it for
     display purposes"""
-    path = '../data/test_and_pred_cap_rate.csv'
+    # path = '../data/test_and_pred_cap_rate.csv' #path for linear model
+    path = "../data/test_and_tree_pred_cap_rate.csv"
     df = pd.read_csv(path)
     df['Latitude'] = df['lats']
     df['Longitude'] = df['longs']
@@ -132,11 +133,11 @@ def display_map(point, df, oakl_geojson):
         pred_price = round(obs.loc['preds'])
         area = round(obs.loc['GrLivArea_x'])
         qual = round(obs.loc['OverallQual_x'])
-        central_air = 'Yes' if round(obs.loc['CentralAir_Y']) == 1 else 'No'
+        #central_air = 'Yes' if round(obs.loc['CentralAir_Y']) == 1 else 'No'
         yr_built = round(obs.loc['YearBuilt_x'])
         address = obs.loc['Full_Addr']
         owner = obs.loc['MA_Ownr1'] if obs.loc['MA_Ownr1'] != 'NaN' else "Unknown"
-        dist = obs.loc["distToUI"]
+        #dist = obs.loc["distToUI"]
         cap_r = round(obs.loc['cap_rate'], 3)
 
         if cap_r < 0:
