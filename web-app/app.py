@@ -31,7 +31,7 @@ import json
 def load_data():
     """Load the test files with model predictions, subsampling a fraction of it for
     display purposes"""
-    path = '../data/test_and_pred_full.csv'
+    path = '../data/test_and_pred_cap_rate.csv'
     df = pd.read_csv(path)
     df['Latitude'] = df['lats']
     df['Longitude'] = df['longs']
@@ -88,16 +88,19 @@ def handle_custom_point(point, df):
         yr_built = round(obs.loc['YearBuilt_x'])
         address = obs.loc['Full_Addr']
         owner = obs.loc['MA_Ownr1'] if obs['MA_Ownr1'] != 'NaN' else "Unknown"
+        cap_r = round(obs.loc['cap_rate'], 3)
+
         return folium.Marker(location=location_,
                              popup="""
-                        <i>Predicted price: </i> <br> <b>${}</b> </i>
+                        <i>Predicted price: </i> <br> <b>${}</b> </i> <br>
+                        <i>Predicted cap rate: </i> <br> <b>{}%</b> </i> <br>
                         <i> Sqft: </i><b><br>{}</b> <br></i>
                         <i> Quality: </i> <br> <b>{}</b> <br></i>
                         <i> Year built: </i> <br> <b>{}</b> <br></i>
                         <i> Owner: </i> <br> <b>{}</b> <br></i>
                         <i> Address: </i> <br> <b>{}</b> <br></i>
 
-                        """.format(pred_price, area, qual, yr_built, owner, address),
+                        """.format(pred_price, cap_r*100, area, qual, yr_built, owner, address),
                              icon=folium.Icon(color='orange', icon="info-sign"))
 
     else:
@@ -133,24 +136,42 @@ def display_map(point, df, oakl_geojson):
         yr_built = round(obs.loc['YearBuilt_x'])
         address = obs.loc['Full_Addr']
         owner = obs.loc['MA_Ownr1'] if obs.loc['MA_Ownr1'] != 'NaN' else "Unknown"
+        dist = obs.loc["distToUI"]
+        cap_r = round(obs.loc['cap_rate'], 3)
+
+        if cap_r < 0:
+            color_ = 'darkred'
+        elif cap_r < 0.05:
+            color_ = 'lightblue'
+        elif cap_r < 0.1:
+            color_ = 'blue'
+        else:
+            color_ = 'darkblue'
+        # if dist < 0.8:  # .5 mile+ campus size adjustment
+        #     color_ = "green"
+        # elif dist < 1.3:
+        #     color_ = "lightgreen"
+        # else:
+        #     color_ = 'blue'
 
         folium.Marker(location=location_,
                       popup="""
-                  <i>Predicted price: </i> <br> <b>${}</b> </i>
+                  <i>Predicted price: </i> <br> <b>${}</b> </i> <br>
+                  <i>Predicted cap rate: </i> <br> <b>{}%</b> </i> <br>
                   <i> Sqft: </i><b><br>{}</b> <br></i>
                   <i> Quality: </i> <br> <b>{}</b> <br></i>
                   <i> Year built: </i> <br> <b>{}</b> <br></i>
                   <i> Owner: </i> <br> <b>{}</b> <br></i>
                   <i> Address: </i> <br> <b>{}</b> <br></i>
 
-                  """.format(pred_price, area, qual, yr_built, owner, address),
-                      icon=folium.Icon()).add_to(m)
+                  """.format(pred_price, cap_r*100, area, qual, yr_built, owner, address),
+                      icon=folium.Icon(color=color_, icon="info-sign")).add_to(m)
 
     folium.Marker(location=[isu_lat, isu_long],
                   popup="""
                   <i>Iowa State University: </i> <br> <b>{}</b> </i>
                   """.format('Ames,Iowa'),
-                  icon=folium.Icon(color="red", icon="info-sign")).add_to(m)
+                  icon=folium.Icon(color="gray", icon="info-sign")).add_to(m)
 
     folium.CircleMarker(
         location=[isu_lat, isu_long],
