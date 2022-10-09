@@ -3,6 +3,7 @@ For a presentation of the work, please see [here](https://drive.google.com/file/
 
 - The aim of this work is to identify the most profitable student housing properties using real estate studies and tree-based models in Python, deploying findings into a Folium+Streamlit+Heroku app for real estate investors.  
 - Due to multicollinearity concerns with regularized linear regression, XGBoost, Catboost, and random forest were pooled into the final price prediction model
+- An explainable model that does not suffer from mutlicollinearity but has slightly lower accuracy is also trained
 - Cap rates (ratios of net operating income to predicted house price) were used to determine most lucrative properties
 - The app is deployed [here](https://ames-app.herokuapp.com/)
 
